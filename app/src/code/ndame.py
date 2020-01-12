@@ -63,15 +63,6 @@ def rabbit(solutions):
     print (payload)
     print("statut:{}".format(r.status_code))
     print(r.text)
-
-    # def display(self):
-    #     for row in range(self.size):
-    #         for column in range(self.size):
-    #             if column == self.columns[row]:
-    #                 print('Q', end=' ')
-    #             else:
-    #                 print('.', end=' ')
-    #         print()
  
  
 def print_all_solutions_to_n_queen(size):
