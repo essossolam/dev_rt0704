@@ -4,7 +4,7 @@ from git import Repo, Git
 import os
 
 def git_init():
-    bare_repo = Repo.init(os.path.join('/home/jordy', 'dev_folder'), bare=True)
+    bare_repo = Repo.init(os.path.join(self.rorepo.working_tree_dir, 'dev_folder'), bare=True)
     assert bare_repo.bare
 
 def git_clone(repo_url, repo_dir, ref='master'):
