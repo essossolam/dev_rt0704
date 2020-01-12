@@ -12,7 +12,7 @@ while hasTask:
         data = json.loads(r.text)
         stream1 = os.popen('git clone {}'.format(data['code']))
         stream1.read()
-        stream2 = os.popen('python /rt0704/ndame.py 8')
+        stream2 = os.popen('python /code/ndame.py 8')
         output = stream2.read()
         print (output)
     else:
