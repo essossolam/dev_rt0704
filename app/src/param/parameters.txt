@@ -1,9 +1,0 @@
-{
-    "task_param": [
-        {
-            "pid":1,
-            "task_id": 1,
-            "input": 4
-        }
-    ]
-}

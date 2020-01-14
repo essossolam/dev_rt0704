@@ -42,19 +42,18 @@ for i in range(nbr_task):
     #print(task)
 data = {}
 data['task_param'] = params
-file = open('param/{}'.format(p_file_params),'w')
-file.write(json.dumps(data))
-time.sleep(5)
-# with open('param/parameters.txt') as json_file:
-#      data = json.load(json_file)
-#      for p in data['task_param']:
-#          if (p['task_id'] == 1):
-#              print ("yes")
+
+def write_f_parameters(file_name, _data):
+    file = open('param/{}'.format(file_name),'w')
+    file.write(json.dumps(_data))
+    file.close
+write_f_parameters(p_file_params, data)
+
 #Envoie des paramètres sur git
 git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
 git_commit(parentDir,"The {} project parameters".format(p_name))
 git_push(parentDir)
-file.close
+
 #Envoie du code sur git
 # git_add_file("{}/code/ndame.py".format(basepath), parentDir)
 # git_commit(parentDir,"The damen problem code")
