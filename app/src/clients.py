@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#Code du commanditaire 
+# Code du commanditaire
 import requests
 import json
 import os
@@ -11,10 +11,11 @@ APIENDPOINT = "http://127.0.0.1:5000"
 basepath = os.path.dirname(os.path.abspath(__file__))
 parentDir = os.path.dirname(os.path.dirname(basepath))
 
-#création des tâches sous format JSON
+# création des tâches sous format JSON
 
-# Cette partie du code commanditaire permet de distribuer les tâches 
-echiquier = int(input("Pour quel type d'échiquier aimeriez-vous avoir le nombre de solutions: "))
+# Cette partie du code commanditaire permet de distribuer les tâches
+echiquier = int(
+    input("Pour quel type d'échiquier aimeriez-vous avoir le nombre de solutions: "))
 _dispatch = input('Voulez-vous diviser la tâche (o/n): ')
 if _dispatch == 'o':
     nbr_task = int(input('En combien de tâches: '))
@@ -28,38 +29,50 @@ for i in range(nbr_task):
     param = {}
     _id = i+1
     task = {
-    "pid":pid,
-    "id":_id,
-    "code":"https://github.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
-    "params":"https://github.com/essossolam/rt0704/master/app/src/param/{}".format(p_file_params)
+        "pid": pid,
+        "id": _id,
+        "code": "https://github.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
+        "params": "https://github.com/essossolam/rt0704/master/app/src/param/{}".format(p_file_params)
     }
-    
+
+    #[POST] envoie des tâches dans a file de message 'TODO'
+    payload= {}
+    payload['task'] = task
+    mydata = {"data": json.dumps(payload)}
+    r = requests.post("{}/rabbit/{}".format(APIENDPOINT,'TODO'), data=mydata)
+    print("statut:{}".format(r.status_code))
+    print(r.text)
+
+    #paramètre pour chaque tâche créée
     param['pid'] = pid
     param['task_id'] = _id
     param['input'] = int(echiquier/nbr_task)
     params.append(param)
 
-    #print(task)
+    # print(task)
 data = {}
 data['task_param'] = params
 
+
 def write_f_parameters(file_name, _data):
-    file = open('param/{}'.format(file_name),'w')
+    file = open('param/{}'.format(file_name), 'w')
     file.write(json.dumps(_data))
     file.close
+
+
 write_f_parameters(p_file_params, data)
 
-#Envoie des paramètres sur git
+# Envoie des paramètres sur git
 git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
-git_commit(parentDir,"The {} project parameters".format(p_name))
+git_commit(parentDir, "The {} project parameters".format(p_name))
 git_push(parentDir)
 
-#Envoie du code sur git
-# git_add_file("{}/code/ndame.py".format(basepath), parentDir)
-# git_commit(parentDir,"The damen problem code")
-# git_push(parentDir)
-#git_init()
-#POST create new queue
+# Envoie du code sur git
+git_add_file("{}/code/ndame.py".format(basepath), parentDir)
+git_commit(parentDir, "The damen problem code")
+git_push(parentDir)
+# git_init()
+# POST create new queue
 # payload= {}
 # queue1 = 'TODO'
 # queue2 = 'DONE'
@@ -69,15 +82,9 @@ git_push(parentDir)
 # print("statut:{}".format(r.status_code))
 # print(r.text)
 
-#POST insert new message in queue
-# payload= {}
+# POST insert new message in queue
 # queue1 = 'TODO'
 # queue2 = 'DONE'
-# payload['task'] = task
-# mydata = {"data": json.dumps(payload)}
-# r = requests.post("{}/rabbit/{}".format(APIENDPOINT,queue1), data=mydata)
-# print("statut:{}".format(r.status_code))
-# print(r.text)
 
 
 # #GET messages from a queue
