@@ -4,3 +4,4 @@ RUN mkdir code_to_execute
 COPY src/worker_code /code_to_execute
 
 CMD python3 /code_to_execute/worker_client.py
+CMD tail -f /dev/null

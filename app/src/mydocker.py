@@ -11,7 +11,7 @@ def containers_list():
     print (client.containers.list())
 
 def build_docker_image():
-    stream = os.popen('docker build -t worker_image:1.0 ~/dev_rt0704/app/.')
+    stream = os.popen('docker build -t worker_image:1.0 /home/jordy/dev_rt0704/app/.')
     output = stream.read()
     print (output)
 

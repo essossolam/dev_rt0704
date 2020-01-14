@@ -31,8 +31,8 @@ for i in range(nbr_task):
     task = {
         "pid": pid,
         "id": _id,
-        "code": "https://github.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
-        "params": "https://github.com/essossolam/rt0704/master/app/src/param/{}".format(p_file_params)
+        "code": "https://raw.githubusercontent.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
+        "params": "https://raw.githubusercontent.com/essossolam/dev_rt0704/master/app/src/param/{}".format(p_file_params)
     }
 
     #[POST] envoie des tâches dans a file de message 'TODO'

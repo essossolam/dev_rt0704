@@ -17,9 +17,9 @@ while hasTask:
         with open('hello_parameters.txt') as json_file:
             params = json.load(json_file)
             for p in params['task_param']:
-            if (p['pid'] == data['pid'] and p['task_id'] == data['id']):
-                stream3 = os.popen('python ndame.py {}'.format(params['input']))
-                output = stream3.read()
-                print(output)
+                if (p['pid'] == data['pid'] and p['task_id'] == data['id']):
+                    stream3 = os.popen('python ndame.py {}'.format(params['input']))
+                    output = stream3.read()
+                    print(output)
     else:
         hasTask = False
