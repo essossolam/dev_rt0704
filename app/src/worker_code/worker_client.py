@@ -10,9 +10,9 @@ while hasTask:
     r = requests.get("{}/rabbit/TODO".format(APIENDPOINT))
     if (r.text != '0'):
         data = json.loads(r.text)
-        stream1 = os.popen('git clone {}'.format(data['code']))
+        stream1 = os.popen('wget {}'.format(data['code']))
         stream1.read()
-        stream2 = os.popen('git clone {}'.format(data['params']))
+        stream2 = os.popen('wget {}'.format(data['params']))
         stream2.read()
         with open('parameters.txt') as json_file:
             params = json.load(json_file)
