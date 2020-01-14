@@ -13,18 +13,23 @@ parentDir = os.path.dirname(os.path.dirname(basepath))
 task = {
     "pid":1,
     "id":1,
-    "code":"https://github.com/essossolam/dev_rt0704/app/src/code",
-    "params":"https://github.com/essossolam/rt0704"
+    "code":"https://github.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
+    "params":"https://github.com/essossolam/rt0704/master/app/src/param/parameters.txt"
 }
 
+with open('param/parameters.txt') as json_file:
+     data = json.load(json_file)
+     for p in data['task_param']:
+         if (p['task_id'] == 1):
+             print ("yes")
 #Envoie des paramètres sur git
-git_add_file("{}/param/paramaters.txt".format(basepath), parentDir)
-git_commit(parentDir,"The damen problem parameters")
-git_push(parentDir)
+# git_add_file("{}/param/paramaters.txt".format(basepath), parentDir)
+# git_commit(parentDir,"The damen problem parameters")
+# git_push(parentDir)
 #Envoie du code sur git
-git_add_file("{}/code/ndame.py".format(basepath), parentDir)
-git_commit(parentDir,"The damen problem code")
-git_push(parentDir)
+# git_add_file("{}/code/ndame.py".format(basepath), parentDir)
+# git_commit(parentDir,"The damen problem code")
+# git_push(parentDir)
 #git_init()
 #POST create new queue
 # payload= {}
