@@ -18,7 +18,7 @@ while hasTask:
             params = json.load(json_file)
             for p in params['task_param']:
                 if (p['pid'] == data['pid'] and p['task_id'] == data['id']):
-                    stream3 = os.popen('python ndame.py {}'.format(params['input']))
+                    stream3 = os.popen('python ndame.py {}'.format(p['input']))
                     output = stream3.read()
                     print(output)
     else:
