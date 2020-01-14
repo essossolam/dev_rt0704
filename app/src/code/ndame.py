@@ -50,8 +50,8 @@ def rabbit(solutions):
     APIENDPOINT = "http://172.17.0.1:5000"
 
     task = {
-        "pid":1,
-        "id":1,
+        "pid":sys.argv[2],
+        "id": sys.argv[3],
         "solutions":solutions
     }
 
