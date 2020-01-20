@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # Code du commanditaire
+
 import requests
 import json
 import os
@@ -7,25 +8,72 @@ import random
 import time
 from mygit import git_add_file, git_commit, git_push, git_init, git_pull
 
+WAITING_DELAY = 30
 APIENDPOINT = "http://127.0.0.1:5000"
 basepath = os.path.dirname(os.path.abspath(__file__))
 parentDir = os.path.dirname(os.path.dirname(basepath))
 
+""" Début déclarations des fonctions
+"""
+
+def create_queues_for_project():
+    #POST create new queue
+    payload= {}
+    queue = ['TODO', 'DONE']
+    for q in queue:
+        payload['queue_name'] = q
+        mydata = {"data": json.dumps(payload)}
+        r = requests.post("{}/rabbit".format(APIENDPOINT), data=mydata)
+        print("statut:{}".format(r.status_code))
+        print(r.text)
+
+def write_f_parameters(file_name, _data):
+    file = open('param/{}'.format(file_name), 'w')
+    file.write(json.dumps(_data))
+    file.close
+
+def write_in_logs(message):
+    payload= {}
+    payload['message'] = message
+    mydata = {"data": json.dumps(payload)}
+    r = requests.post("{}/rabbit/logs/{}".format(APIENDPOINT,'logs'), data=mydata)
+
+def git_utilities(basepath, p_file_params, parentDir, p_name):
+    # Envoie des paramètres sur git
+    git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
+    git_commit(parentDir, "The {} project parameters".format(p_name))
+    git_push(parentDir)
+
+    # Envoie du code sur git
+    git_add_file("{}/code/ndame.py".format(basepath), parentDir)
+    git_commit(parentDir, "The damen problem code")
+    git_push(parentDir)
+
+    return True
+
+""" Fin déclarations des fonctions
+"""
 # création des tâches sous format JSON
 
 # Cette partie du code commanditaire permet de distribuer les tâches
 echiquier = int(
     input("Pour quel type d'échiquier aimeriez-vous avoir le nombre de solutions: "))
 _dispatch = input('Voulez-vous diviser la tâche (o/n): ')
+
 if _dispatch == 'o':
     nbr_task = int(input('En combien de tâches: '))
     p_name = input('Entrer le nom de votre projet: ')
+
+#Appel de la fonction pour créer les files de messages
+create_queues_for_project()
+
 pid = random.randrange(0, 1000, 2)
 p_file_params = '{}_parameters.txt'.format(p_name)
 stream1 = os.popen('touch param/{}'.format(p_file_params))
 stream1.read()
 
 params = []
+pending_tasks = {}
 for i in range(nbr_task):
     param = {}
     _id = i+1
@@ -38,12 +86,14 @@ for i in range(nbr_task):
     }
 
     #[POST] envoie des tâches dans a file de message 'TODO'
-    payload= {}
+    payload = {}
     payload['task'] = task
+    pending_tasks[(pid+_id)] = task
     mydata = {"data": json.dumps(payload)}
     r = requests.post("{}/rabbit/{}".format(APIENDPOINT,'TODO'), data=mydata)
     print("statut:{}".format(r.status_code))
     print(r.text)
+    write_in_logs("La tâche {} du projet numero {} a été envoyée.".format(_id, pid))
 
     #paramètre pour chaque tâche créée
     param['pid'] = pid
@@ -55,24 +105,23 @@ for i in range(nbr_task):
 data = {}
 data['task_param'] = params
 
-
-def write_f_parameters(file_name, _data):
-    file = open('param/{}'.format(file_name), 'w')
-    file.write(json.dumps(_data))
-    file.close
-
-
 write_f_parameters(p_file_params, data)
 
-# Envoie des paramètres sur git
-git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
-git_commit(parentDir, "The {} project parameters".format(p_name))
-git_push(parentDir)
+hasResult = True
+while hasResult:
+    #GIT
+    _sended = git_utilities(basepath, p_file_params, parentDir, p_name)
+    r = requests.get("{}/rabbit/get/DONE".format(APIENDPOINT))
+    nbr_result = int(r.text)
 
-# Envoie du code sur git
-git_add_file("{}/code/ndame.py".format(basepath), parentDir)
-git_commit(parentDir, "The damen problem code")
-git_push(parentDir)
+    if (nbr_result > 0):
+        r = requests.get("{}/rabbit/n_ack/DONE".format(APIENDPOINT))
+        print("statut:{}".format(r.status_code))
+        print(r.text)
+
+    else: 
+        time.sleep(WAITING_DELAY)
+
 # git_init()
 # POST create new queue
 # payload= {}
@@ -93,3 +142,7 @@ git_push(parentDir)
 # r = requests.get("{}/rabbit/TODO".format(APIENDPOINT))
 # print("statut:{}".format(r.status_code))
 # print(r.text)
+
+#Récupération des résultats
+
+#Gestion de la panne

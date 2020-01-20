@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from flask import Flask, request
-from producer import create_queue, write_in_queue, read_queue, get_result_nbr
+from producer import create_queue, write_in_queue, read_queue, get_result_nbr, read_queue_n_ack
 import pika
 import json
 
@@ -52,6 +52,12 @@ def post_log_message(nom_file):
     r = write_in_queue(nom_file, data['message'])
 
     return "Successfully writed!"
+
+@app.route('/rabbit/n_ack/<nom_file>', methods=['GET'])
+def read_queue_no_ack(nom_file):
+    r = read_queue_n_ack(nom_file)
+    response =  r
+    return response
     
 
 if __name__ == "__main__":

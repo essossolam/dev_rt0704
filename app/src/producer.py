@@ -28,6 +28,14 @@ def read_queue(name):
         return json.loads(body)
     else:
         return '0'
+
+def read_queue_n_ack(name):
+    channel = connection().channel()
+    method_frame, header_frame, body = channel.basic_get(name)
+    if method_frame:
+        return json.loads(body)
+    else:
+        return '0'
 # parties rajoutées
 
 # fonction pour récupérer le nombre de messges dans une file
