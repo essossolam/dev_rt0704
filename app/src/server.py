@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from flask import Flask, request
-from producer import create_queue, write_in_queue, read_queue
+from producer import create_queue, write_in_queue, read_queue, get_result_nbr
 import pika
 import json
 
@@ -35,6 +35,23 @@ def read_message(nom_file):
     r = read_queue(nom_file)
     response =  r
     return response
+
+#Parties rajouté
+
+#GET nombre de résultats
+@app.route('/rabbit/get/<nom_file>', methods=['GET'])
+def get_r_result(nom_file):
+    r = get_result_nbr(nom_file)
+    response =  r
+    return response
+
+#messages logs
+@app.route('/rabbit/logs/<nom_file>', methods=['POST'])
+def post_log_message(nom_file):
+    data = json.loads(request.form['data'])
+    r = write_in_queue(nom_file, data['message'])
+
+    return "Successfully writed!"
     
 
 if __name__ == "__main__":

@@ -24,6 +24,7 @@ pid = random.randrange(0, 1000, 2)
 p_file_params = '{}_parameters.txt'.format(p_name)
 stream1 = os.popen('touch param/{}'.format(p_file_params))
 stream1.read()
+
 params = []
 for i in range(nbr_task):
     param = {}
@@ -32,7 +33,8 @@ for i in range(nbr_task):
         "pid": pid,
         "id": _id,
         "code": "https://raw.githubusercontent.com/essossolam/dev_rt0704/master/app/src/code/ndame.py",
-        "params": "https://raw.githubusercontent.com/essossolam/dev_rt0704/master/app/src/param/{}".format(p_file_params)
+        "params": "https://raw.githubusercontent.com/essossolam/dev_rt0704/master/app/src/param/{}".format(p_file_params),
+        "file_name": p_file_params
     }
 
     #[POST] envoie des tâches dans a file de message 'TODO'

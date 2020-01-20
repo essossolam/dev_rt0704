@@ -3,21 +3,21 @@ import pika
 import json
 import sys
 
+
 def connection():
     return pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+
 
 def create_queue(name):
     channel = connection().channel()
     channel.queue_declare(queue=name)
     connection().close()
-   
 
 
-def write_in_queue(name,message):
+def write_in_queue(name, message):
     channel = connection().channel()
     channel.basic_publish(
         exchange='', routing_key=name, body=json.dumps(message))
-
 
 
 def read_queue(name):
@@ -28,6 +28,15 @@ def read_queue(name):
         return json.loads(body)
     else:
         return '0'
+# parties rajoutées
+
+# fonction pour récupérer le nombre de messges dans une file
+
+
+def get_result_nbr(name):
+    channel = connection().channel()
+    response = channel.queue_declare(name, passive=True)
+    return str(response.method.message_count)
 
 
 
