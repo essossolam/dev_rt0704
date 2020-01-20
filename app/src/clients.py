@@ -139,7 +139,7 @@ except:
                     data2 = json.loads(r3.text)
                     _key = int(data2['id']) + int(data2['pid'])
                     print (pending_tasks)
-                    del pending_tasks[key]
+                    del pending_tasks[_key]
                     if (len(pending_tasks)!= 0):
                         for item in pending_tasks.items():
                             payload = {}
@@ -149,6 +149,7 @@ except:
 
 
         else: 
+            print("Tâches en cours de traitement...")
             time.sleep(WAITING_DELAY)
 
 
