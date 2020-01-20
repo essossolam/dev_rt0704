@@ -40,14 +40,14 @@ def write_in_logs(message):
 
 def git_utilities(basepath, p_file_params, parentDir, p_name):
     # Envoie des paramètres sur git
-    git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
-    git_commit(parentDir, "The {} project parameters".format(p_name))
-    git_push(parentDir)
+    add1 = git_add_file("{}/param/{}".format(basepath, p_file_params), parentDir)
+    commit1 = git_commit(parentDir, "The {} project parameters".format(p_name))
+    push1 = git_push(parentDir)
 
     # Envoie du code sur git
-    git_add_file("{}/code/ndame.py".format(basepath), parentDir)
-    git_commit(parentDir, "The damen problem code")
-    git_push(parentDir)
+    add2 = git_add_file("{}/code/ndame.py".format(basepath), parentDir)
+    commit2 = git_commit(parentDir, "The damen problem code")
+    push2 = git_push(parentDir)
 
     return True
 
@@ -108,19 +108,51 @@ data['task_param'] = params
 write_f_parameters(p_file_params, data)
 
 hasResult = True
-while hasResult:
-    #GIT
-    _sended = git_utilities(basepath, p_file_params, parentDir, p_name)
-    r = requests.get("{}/rabbit/get/DONE".format(APIENDPOINT))
-    nbr_result = int(r.text)
+result = 0
 
-    if (nbr_result > 0):
-        r = requests.get("{}/rabbit/n_ack/DONE".format(APIENDPOINT))
-        print("statut:{}".format(r.status_code))
-        print(r.text)
+try:
+    git_utilities(basepath, p_file_params, parentDir, p_name)
+except:
+    while hasResult: 
+        r = requests.get("{}/rabbit/get/DONE".format(APIENDPOINT))
+        nbr_result = int(r.text)
 
-    else: 
-        time.sleep(WAITING_DELAY)
+        if (nbr_result > 0):
+            if (nbr_result == nbr_task):
+                are_get = True
+                while are_get:
+                    r2 = requests.get("{}/rabbit/DONE".format(APIENDPOINT))
+                    if (r2.text != '0'):
+                        data = json.loads(r2.text)
+                        result += int(data['solutions'])
+                    else:
+                        are_get = False
+                        hasResult = False    
+                        print("Tout les jobs sont terminées !!!... \n")      
+                        print("Le nombre de solutions possible est : {}".format(result))
+            else:
+                time.sleep(WAITING_DELAY)
+                r4 = requests.get("{}/rabbit/get/DONE".format(APIENDPOINT))
+                nbr_result2 = int(r.text)
+                for i in range(nbr_result2):
+                    r3 = requests.get("{}/rabbit/n_ack/DONE".format(APIENDPOINT))
+                    data2 = json.loads(r3.text)
+                    _key = int(data2['id']) + int(data2['pid'])
+                    print (pending_tasks)
+                    del pending_tasks[key]
+                    if (len(pending_tasks)!= 0):
+                        for item in pending_tasks.items():
+                            payload = {}
+                            payload['task'] = item
+                            mydata = {"data": json.dumps(payload)}
+                            r5 = requests.post("{}/rabbit/{}".format(APIENDPOINT,'TODO'), data=mydata)
+
+
+        else: 
+            time.sleep(WAITING_DELAY)
+
+
+
 
 # git_init()
 # POST create new queue
